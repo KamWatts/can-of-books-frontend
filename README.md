@@ -1,11 +1,14 @@
-# Start your own "Can of Books" App
+# The "Can of Books" App
 
-This repository has starter code to begin work on creating your own online bookshelf.
+## Authors: [Kameron Watts](https://github.com/KamWatts) and [Anthony Keith](https://github.com/AnthonyKeith15)
 
+## Overview 
+
+This app is your one-stop-shop to browsing the world of electronic books. This app is constructed with React.js. The database was built with MongoDB.
 ## What can books do?
 
 Books are life-changing. They have the power to enlighten, educate, entertain, heal, and help us grow. Build out this code base to create an web app to track what books have impacted you, and what's recommended to read next.
 
-## Use this template
+## WRRC
 
-Clone this repo to your own account with the green "Use this template" button. Then, add any collaborators. Now you are ready to start adding features! Deploy your site to let the world know which books have had the greatest impact on you, and what's recommended. Enjoy!
+[Web Request Response Cycle](./public/DataBase%20WRRC.jpg)

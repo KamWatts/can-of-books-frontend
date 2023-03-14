@@ -1,6 +1,7 @@
 import React from 'react';
 import axios from 'axios';
 
+const SERVER = process.env.REACT_APP_SERVER;
 
 class BestBooks extends React.Component {
   constructor(props) {
@@ -26,37 +27,41 @@ class BestBooks extends React.Component {
     console.log(this.state.books);
   }
 
+  getBooks = async () => {
+    try {
+      let results = await axios.get(`${SERVER}/books`);
+      this.setState({
+        books: results.data,
+      })
+    } catch (error) {
+      console.log('We have an error:', error.response.data)
+    }
+  }
+
   componentDidMount() {
-    // DONE: Make a GET request to your API to fetch all the books from the database
-    // axios.get('/models/book.js')
-    //   .then(response => response.json())
-    //   .then(data => this.setState({ books: data }))
-    //   .catch(error => console.log(error));
+
+    this.getBooks();
   }
 
   render() {
-    this.getBooks();
-    const { books } = this.state;
-    console.log(books);
-    // render the books using the react-animated-slider library
+    let books = this.state.books.map((book, idx) => (
+      <p key={book._id}>
+        Title: {book.title}, description: {book.description}, status: {book.status}
+      </p>
+    ))
 
     return (
-      <>
-        <h2>My Essential Lifelong Learning &amp; Formation Shelf</h2>
-
-        {this.books.length > 0} ? (
-          <div>
-            {books.map((book, index) => (
-                    <div key={index} style={{ background: `url(${this.book.image}) no-repeat center center` }}>
-                <h3>{this.book.title}</h3>
-                <p>{this.book.description}</p>
-              </div>
-            ))}
-          </div>
+      <main>
+        {this.state.books.length > 0 ? (
+          <>
+            {books}
+          </>
         ) : (
-          <h3>The collection is empty(</h3>
-        )
-      </>
+          <p>No books found.</p>
+        )}
+
+      </main>
+
     )
   }
 }

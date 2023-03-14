@@ -1,13 +1,30 @@
 import React from 'react';
 import axios from 'axios';
+
 const SERVER = process.env.REACT_APP_SERVER;
 
 class BestBooks extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      books: []
+      books: [],
+      title: '',
+      decription: '',
+      image: ''
     }
+  }
+
+
+  getBooks = async () => {
+    try {
+      let results = await axios.get(`${process.env.SERVER}/books`);
+      this.setState({
+        books: results.data
+      })
+    } catch(error) {
+      console.log('An error occurred: ', error.response.data)
+    }
+    console.log(this.state.books);
   }
 
   getBooks = async () => {
@@ -22,6 +39,7 @@ class BestBooks extends React.Component {
   }
 
   componentDidMount() {
+
     this.getBooks();
   }
 
@@ -43,6 +61,7 @@ class BestBooks extends React.Component {
         )}
 
       </main>
+
     )
   }
 }

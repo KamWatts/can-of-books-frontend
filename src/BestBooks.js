@@ -44,10 +44,10 @@ class BestBooks extends React.Component {
         let url = `${SERVER}/books`;
         let createdBook = await axios.post(url, newBook)
         console.log(createdBook.data);
-        this.getBooks();
         this.setState({
           books: [...this.state.books, createdBook.data]
         })
+        this.getBooks();
     } catch(error) {
       console.log('There seems to be a problem: ', error.response.data);
     }
@@ -66,7 +66,7 @@ class BestBooks extends React.Component {
 
   deleteBooks = async (_id) => {
     try {
-    let url = `{SERVER}/books/${_id}`
+    let url = `${SERVER}/books/${_id}`
     // DO NOT EXPECT A RETURN VALUE AFTER axios.delete();
     await axios.delete(url);
     } catch(error) {

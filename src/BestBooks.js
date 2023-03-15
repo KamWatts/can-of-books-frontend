@@ -64,11 +64,15 @@ class BestBooks extends React.Component {
     this.postBook(newBook) 
   }
 
-  deleteBooks = async (_id) => {
+  deleteBooks = async (id) => {
     try {
-    let url = `${SERVER}/books/${_id}`
+    let url = `${SERVER}/books/${id}`
     // DO NOT EXPECT A RETURN VALUE AFTER axios.delete();
     await axios.delete(url);
+    let updatedBooks = this.setState.stae.books.filter(book => book._id !== id);
+    this.setState({
+      books: updatedBooks
+    })
     } catch(error) {
       console.log('There may be an issue: ', error.response.data)
     }
@@ -120,6 +124,7 @@ handleCloseModal = () =>
               <h3>{book.title}</h3>
               <p>{book.description}</p>
               <p>Status: {book.status}</p>
+              <Button onClick={() => this.deleteBooks(book._id)}>Delete Book</Button>
             </Carousel.Caption>
           </Carousel.Item>
      )

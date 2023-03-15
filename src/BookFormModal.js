@@ -11,7 +11,7 @@ render() {
 
       <Modal show={this.props.isModalDisplaying}
             onHide={this.props.hideModal}>
-        <Modal.Header closeButton>
+        <Modal.Header closeButton onClick={this.props.handleCloseModal}>
           <Modal.Title>Add Your Own Book</Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -34,7 +34,7 @@ render() {
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={this.props.closeModal}>
+          <Button variant="secondary" onClick={this.props.handleCloseModal}>
             Close
           </Button>
           <Button variant="primary" onClick={this.props.handleBookSubmit}>

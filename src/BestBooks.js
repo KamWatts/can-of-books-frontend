@@ -4,6 +4,7 @@ import Carousel from 'react-bootstrap/Carousel';
 import Image from 'react-bootstrap/Image'
 import Button from 'react-bootstrap/Button'
 import BookFormModal from './BookFormModal';
+import UpdateButtonFormModal from './UpdateButtonForm';
 
 const SERVER = process.env.REACT_APP_SERVER;
 
@@ -13,12 +14,14 @@ class BestBooks extends React.Component {
     this.state = {
       books: [],
       isModalDisplaying: false,
+      isUpdateModalDisplaying: false,
       bookToDisplay: {},
       index: 0, // added index to state
-      status: ''
+      status: '',
+      showUpdateForm: false
     }
   }
-
+  
   handleSelect = (selectedIndex) => { // added handleSelect function
     this.setState({
       index: selectedIndex
@@ -28,10 +31,10 @@ class BestBooks extends React.Component {
   componentDidMount = async () => { // added async
     try {
       let results = await axios.get(`${SERVER}/books`);
-      console.log(results);
+      console.log(results.data);
       this.setState({
         books: results.data,
-        status: results.data.status
+        // status: results.data.status
       })
     } catch(error) {
       console.log('An error occurred: ', error.response.data)
@@ -39,17 +42,17 @@ class BestBooks extends React.Component {
   }
 
 
-    postBook = async (newBook) => {
+    postBooks = async (newBook) => {
       try {
+        console.log(newBook);
         let url = `${SERVER}/books`;
         let createdBook = await axios.post(url, newBook)
         console.log(createdBook.data);
         this.setState({
           books: [...this.state.books, createdBook.data]
         })
-        this.getBooks();
     } catch(error) {
-      console.log('There seems to be a problem: ', error.response.data);
+      console.log('There seems to be a problem: ', error.response);
     }
   }
 
@@ -57,11 +60,12 @@ class BestBooks extends React.Component {
     event.preventDefault();
     let newBook = {
       name: event.target.name.value,
-      title: event.target.value,
+      title: event.target.title.value,
       description: event.target.description.value,
       userOwnsBook: event.target.userOwnsBook.checked
     }
-    this.postBook(newBook) 
+    console.log(newBook);
+    this.postBooks(newBook) 
   }
 
   deleteBooks = async (id) => {
@@ -69,11 +73,31 @@ class BestBooks extends React.Component {
     let url = `${SERVER}/books/${id}`
     // DO NOT EXPECT A RETURN VALUE AFTER axios.delete();
     await axios.delete(url);
-    let updatedBooks = this.setState.stae.books.filter(book => book._id !== id);
+    let updatedBooks = this.state.books.filter(book => book._id !== id);
     this.setState({
       books: updatedBooks
     })
     } catch(error) {
+      console.log('There may be an issue: ', + error.response + ', ' +  error.response.data)
+    }
+  }
+
+  updateBook = async (bookToUpdate) => {
+    console.log(bookToUpdate);
+    try {
+      let url = `${SERVER}/books/${bookToUpdate.data._id}`
+      let updatedBookFromDB = await axios.put(url, bookToUpdate);
+      let updatedBooks = this.state.books.map((book) => {
+
+        return book._id === bookToUpdate._id 
+          ? updatedBookFromDB.data
+          : book
+      });
+      console.log(updatedBooks);
+      this.setState({
+        books: updatedBooks
+      })
+    } catch (error) {
       console.log('There may be an issue: ', error.response.data)
     }
   }
@@ -90,6 +114,20 @@ handleCloseModal = () =>
     });
 
   };
+
+  closeUpdateModal = () =>
+    this.setState({
+      isUpdateModalDisplaying: false,
+    });
+
+  openUpdateModal = (bookObject) => {
+    this.setState({
+      isUpdateModalDisplaying: true,
+      bookToDisplay: bookObject
+    });
+
+  };
+
 
   render() { // destructured state
     
@@ -125,15 +163,14 @@ handleCloseModal = () =>
               <p>{book.description}</p>
               <p>Status: {book.status}</p>
               <Button onClick={() => this.deleteBooks(book._id)}>Delete Book</Button>
+              <Button onClick={() => this.openUpdateModal(book)}>Update Book</Button>
             </Carousel.Caption>
           </Carousel.Item>
      )
      )}
         </Carousel>
 
-      <Button onClick = {() => this.setState({
-        isModalDisplaying: true
-      })}>Add a Book</Button>
+      <Button onClick = {() => this.postBooks({true})}>Add a Book</Button>
     
         {this.state.isModalDisplaying && 
 
@@ -142,7 +179,15 @@ handleCloseModal = () =>
        handleBookSubmit={this.handleBookSubmit} 
        handleCloseModal={this.handleCloseModal}
        handleOpenModal={this.handleOpenModal}/>
+
         }
+
+      <UpdateButtonFormModal
+      showModal={this.state.isUpdateModalDisplaying}
+      closeModal={this.closeUpdateModal}
+      book={this.state.bookToDisplay}
+      updateBook={this.updateBook}
+      />
       </>
       );
     }

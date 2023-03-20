@@ -16,20 +16,39 @@ class BestBooks extends React.Component {
       isModalDisplaying: false,
       isUpdateModalDisplaying: false,
       bookToDisplay: {},
-      index: 0, // added index to state
+      index: 0, 
       status: '',
       showUpdateForm: false
     }
   }
   
-  handleSelect = (selectedIndex) => { // added handleSelect function
+  handleSelect = (selectedIndex) => { 
     this.setState({
       index: selectedIndex
     });
   }
 
-  componentDidMount = async () => { // added async
-    try {
+  getBooks = async () => { 
+    if (this.props.auth0.isAuthenticated) {
+      const res = await this.props.auth0.getIdTokenClaims();
+      console.log('hello, this is the res');
+      console.log(res);
+
+      const jwt = res.__raw;
+      console.log(jwt);
+
+      const config = {
+        method: 'get',
+        baseURL: process.env.REACT_APP_SERVER,
+        url: '/books',
+        headers: {
+          'Authorization': `Bearer ${jwt}`
+        }
+      }
+      const bookResults = await axios(config);
+      console.log(bookResults.data);
+    }
+      try {
       let results = await axios.get(`${SERVER}/books`);
       console.log(results.data);
       this.setState({
@@ -41,6 +60,9 @@ class BestBooks extends React.Component {
     }
   }
 
+  componentDidMount() {
+    this.getBooks();
+  }
 
     postBooks = async (newBook) => {
       try {
@@ -170,7 +192,7 @@ handleCloseModal = () =>
      )}
         </Carousel>
 
-      <Button onClick = {() => this.postBooks({true})}>Add a Book</Button>
+      <Button onClick = {() => this.postBooks({})}>Add a Book</Button>
     
         {this.state.isModalDisplaying && 
 
@@ -179,8 +201,7 @@ handleCloseModal = () =>
        handleBookSubmit={this.handleBookSubmit} 
        handleCloseModal={this.handleCloseModal}
        handleOpenModal={this.handleOpenModal}/>
-
-        }
+      }
 
       <UpdateButtonFormModal
       showModal={this.state.isUpdateModalDisplaying}
